@@ -14,6 +14,7 @@ const CalculatorScreen = () => {
 
   const clear = () => {
     setNumber('0');
+    setPreviousNumber('0');
   }
 
   const handleNumberChange = (numberText: string) => {
@@ -93,9 +94,42 @@ const CalculatorScreen = () => {
     lastOperation.current = Operators.add;
   }
 
+  const calculate = () => {
+    const n1 = Number(number);
+    const n2 = Number(previousNumber);
+    
+    //para prevenir NaN como resultado
+    if( n1 === 0 && n2 === 0) {
+      return setNumber('0');
+    }
+
+    //para que el símbolo del igual no borre el numero actual en caso de no haber un segundo nro
+    if( n1 && !n2){
+      return setNumber(`${n1}`)
+    }
+
+    switch (lastOperation.current) {
+      case Operators.division:
+        setNumber(`${n2/n1}`)
+        break;
+      case Operators.multiply:
+        setNumber(`${n1*n2}`)
+        break;
+      case Operators.subtract:
+        setNumber(`${n2-n1}`)
+        break;
+      case Operators.add:
+        setNumber(`${n1+n2}`)
+        break;
+    }
+    setPreviousNumber('0');
+  }
+
   return (
     <View style={styles.calculatorContainer}>
-      <Text style={styles.littleResult}>{previousNumber}</Text>
+      { 
+        (previousNumber !== '0') && (<Text style={styles.littleResult}>{previousNumber}</Text>)
+      }
       <Text 
       style={styles.result}
       numberOfLines={ 1 }
@@ -131,7 +165,7 @@ const CalculatorScreen = () => {
       <View style={styles.row}>
         <ButtonCalc text="0" width action={handleNumberChange}  />
         <ButtonCalc text="." action={handleNumberChange} />
-        <ButtonCalc color="white" backgroundColor="#ff9427" text="=" action={clear} />
+        <ButtonCalc color="white" backgroundColor="#ff9427" text="=" action={calculate} />
       </View>
       {/* #2d2d2d2 gris osc #ff9427 naranja osc */}
 
